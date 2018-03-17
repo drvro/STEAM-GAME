@@ -8,8 +8,11 @@ class Car {
   float rotation;
   Vec2 pos; 
   Vec2 vel;
+  Vec2 panPos; //general position on whole map
   float mag;
-  PImage car;
+  PImage car;  
+  boolean boosted = false;
+  int m;
 
   // Constructor
   Car(float x, float y) {
@@ -25,18 +28,38 @@ class Car {
   }
 
   void move() {
+    
+    {      
+    if ((millis()-m)>5000)
+      boosted=false;
+      
+    if (boosted)
+    accelerate2();
+    else if (!boosted)
     accelerate();
 
     vel.x = cos(-rotation)*mag;
     vel.y = sin(-rotation)*mag;
-
+    
+    if (box2d.getBodyPixelCoord(b.body).x>1 && box2d.getBodyPixelCoord(b.body).x<399 && box2d.getBodyPixelCoord(b.body).y>1 && box2d.getBodyPixelCoord(b.body).y<399)
     pos.x += vel.x;
     pos.y += vel.y;
-    
-    
+        
     body.setTransform(body.getWorldCenter(), -rotation);
     body.setLinearVelocity(new Vec2(vel.x, vel.y));
+    }
   }
+
+
+Vec2 getPanPos() {
+  return this.panPos;
+}
+
+void boost()
+{
+    boosted = true;
+    m = millis();
+}
 
   void accelerate() {
     if (keyPressed && key == 'd') rotation += .1;
@@ -49,7 +72,21 @@ class Car {
       if (Math.abs(mag) < 0.7) mag = 0;
     }
 
-    if (mag > 50) mag = 50;
+    if (mag > 30) mag = 30;
+  }
+  
+  void accelerate2() {
+    if (keyPressed && key == 'd') rotation += .1;
+    if (keyPressed && key == 'a') rotation -= .1;
+    if (mousePressed) {
+      mag+=5;
+    } else {
+      if (mag > 0) mag -= 0.5;
+      if (mag < 0) mag += 0.5;
+      if (Math.abs(mag) < 0.7) mag = 0;
+    }
+
+    if (mag > 60) mag = 60;
   }
 
   // Drawing the box
@@ -94,5 +131,28 @@ class Car {
 
     body = box2d.createBody(bd);
     body.createFixture(fd);
+  }
+  
+  boolean intersect(FreezeBomb fb) {
+
+    // Objects can be passed into functions as arguments too! 
+    float distance = dist(box2d.getBodyPixelCoord(b.body).x, box2d.getBodyPixelCoord(b.body).y, fb.x, fb.y); // Calculate distance
+
+    if (distance < 1.5*fb.r) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  boolean intersect(SpeedBoost sb) {
+
+    // Objects can be passed into functions as arguments too! 
+    float distance = dist(box2d.getBodyPixelCoord(b.body).x, box2d.getBodyPixelCoord(b.body).y, sb.x, sb.y); // Calculate distance
+
+    if (distance < 1.5*sb.r) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
