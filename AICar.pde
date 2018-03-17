@@ -7,8 +7,10 @@ class AICar {
   float w;
   float h;
   float rotation;
-  Vec2 pos, vel;
+  Vec2 pos, vel, panPos; // panPos is the coordinates on the big map
   float mag;
+  boolean immunity;
+
 
   // Constructor
   AICar(float x, float y) {
@@ -17,8 +19,9 @@ class AICar {
     // Add the box to the box2d world
     makeBody(new Vec2(x, y), w, h);
     mag = 0;
-    pos = new Vec2(x, y);
+    panPos = new Vec2(x, y);
     vel = new Vec2(0.0, 0.0);
+    pos = new Vec2(0,0);
     car = loadImage("car2.png");
     car.resize(50,20);
   }
@@ -34,7 +37,7 @@ class AICar {
     if (distx < 0 && disty < 0) rotation = PI+acos((distx*-1)/(dist));
     if (distx > 0 && disty < 0) rotation = PI+acos((distx*-1)/(dist));
 
-    if (mag > 20) mag = 20;
+    if (mag > 12) mag = 12;
   }
 
   void move(Car other) {
@@ -50,6 +53,15 @@ class AICar {
     body.setLinearVelocity(new Vec2(vel.x, vel.y).mulLocal(3));
   }
 
+void stop() {
+    int m = millis();
+    body.setLinearVelocity(new Vec2(0,0).mulLocal(3));
+    while ((millis()-m)<10)
+    {
+      if(mag>0)
+        mag=0;
+    }
+  }
 
 
 
