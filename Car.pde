@@ -133,23 +133,12 @@ void boost()
     body.createFixture(fd);
   }
   
-  boolean intersect(FreezeBomb fb) {
+  boolean intersect(PowerUp p) {
 
     // Objects can be passed into functions as arguments too! 
-    float distance = dist(box2d.getBodyPixelCoord(b.body).x, box2d.getBodyPixelCoord(b.body).y, fb.x, fb.y); // Calculate distance
+    float distance = dist(box2d.getBodyPixelCoord(b.body).x, box2d.getBodyPixelCoord(b.body).y, p.x, p.y); // Calculate distance
 
-    if (distance < 1.5*fb.r) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-  boolean intersect(SpeedBoost sb) {
-
-    // Objects can be passed into functions as arguments too! 
-    float distance = dist(box2d.getBodyPixelCoord(b.body).x, box2d.getBodyPixelCoord(b.body).y, sb.x, sb.y); // Calculate distance
-
-    if (distance < 1.5*sb.r) {
+    if (distance < 1.5*p.r) {
       return true;
     } else {
       return false;
